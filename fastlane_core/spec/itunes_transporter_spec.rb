@@ -1,3 +1,4 @@
+require 'shellwords'
 require 'credentials_manager'
 
 describe FastlaneCore do
@@ -6,15 +7,15 @@ describe FastlaneCore do
       describe "upload command generation" do
         it 'generates a call to java directly' do
           expected_command = [
-            "/Applications/Xcode.app/Contents/Applications/Application\\ Loader.app/Contents/itms/java/bin/java",
-            "-Djava.ext.dirs=/Applications/Xcode.app/Contents/Applications/Application\\ Loader.app/Contents/itms/java/lib/ext",
+            FastlaneCore::Helper.transporter_java_executable_path.shellescape,
+            "-Djava.ext.dirs=#{FastlaneCore::Helper.transporter_java_ext_dir.shellescape}",
             '-XX:NewSize=2m',
             '-Xms32m',
             '-Xmx1024m',
             '-Xms1024m',
             '-Djava.awt.headless=true',
             '-Dsun.net.http.retryPost=false',
-            "-classpath /Applications/Xcode.app/Contents/Applications/Application\\ Loader.app/Contents/itms/lib/itmstransporter-launcher.jar",
+            "-classpath #{FastlaneCore::Helper.transporter_java_jar_path.shellescape}",
             'com.apple.transporter.Application',
             "-m upload",
             "-u fabric.devtools@gmail.com",
@@ -33,15 +34,15 @@ describe FastlaneCore do
       describe "download command generation" do
         it 'generates a call to java directly' do
           expected_command = [
-            '/Applications/Xcode.app/Contents/Applications/Application\\ Loader.app/Contents/itms/java/bin/java',
-            '-Djava.ext.dirs=/Applications/Xcode.app/Contents/Applications/Application\\ Loader.app/Contents/itms/java/lib/ext',
+            FastlaneCore::Helper.transporter_java_executable_path.shellescape,
+            "-Djava.ext.dirs=#{FastlaneCore::Helper.transporter_java_ext_dir.shellescape}",
             '-XX:NewSize=2m',
             '-Xms32m',
             '-Xmx1024m',
             '-Xms1024m',
             '-Djava.awt.headless=true',
             '-Dsun.net.http.retryPost=false',
-            '-classpath /Applications/Xcode.app/Contents/Applications/Application\\ Loader.app/Contents/itms/lib/itmstransporter-launcher.jar',
+            "-classpath #{FastlaneCore::Helper.transporter_java_jar_path.shellescape}",
             'com.apple.transporter.Application',
             '-m lookupMetadata',
             '-u fabric.devtools@gmail.com',
@@ -61,7 +62,7 @@ describe FastlaneCore do
       describe "upload command generation" do
         it 'generates a call to java directly' do
           expected_command = [
-            '"/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/itms/bin/iTMSTransporter"',
+            '"' + FastlaneCore::Helper.transporter_path + '"',
             "-m upload",
             '-u "fabric.devtools@gmail.com"',
             "-p '\\!\\>\\ p@\\$s_-\\+\\=w'\"\\'\"'o\\%rd\\\"\\&\\#\\*\\<'",
@@ -79,7 +80,7 @@ describe FastlaneCore do
       describe "download command generation" do
         it 'generates a call to java directly' do
           expected_command = [
-            '"/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/itms/bin/iTMSTransporter"',
+            '"' + FastlaneCore::Helper.transporter_path + '"',
             '-m lookupMetadata',
             '-u "fabric.devtools@gmail.com"',
             "-p '\\!\\>\\ p@\\$s_-\\+\\=w'\"\\'\"'o\\%rd\\\"\\&\\#\\*\\<'",
