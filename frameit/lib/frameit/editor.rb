@@ -87,7 +87,7 @@ module Frameit
     def complex_framing
       background = generate_background
 
-      if self.frame # we have no frame on le mac
+      if self.frame && fetch_config["frame"] != false # we have no frame on le mac
         resize_frame!
         @image = put_into_frame
 
@@ -109,20 +109,27 @@ module Frameit
 
     # Horizontal adding around the frames
     def horizontal_frame_padding
-      padding = fetch_config['padding']
-      unless padding.kind_of?(Integer)
-        padding = padding.split('x')[0].to_i
-      end
-      return scale_padding(padding)
+      # Same as vertical frame padding
+      return vertical_frame_padding
     end
 
     # Vertical adding around the frames
     def vertical_frame_padding
+      # Use padding - the original method. However, it does not display nicely for iPads.
       padding = fetch_config['padding']
-      unless padding.kind_of?(Integer)
-        padding = padding.split('x')[1].to_i
+      if padding
+        unless padding.kind_of?(Integer)
+          padding = padding.split('x')[1].to_i
+        end
+        return scale_padding(padding)
       end
-      return scale_padding(padding)
+
+      # Use padding_factor
+      padding_factor = fetch_config['padding_factor']
+      if !padding_factor
+        padding_factor = 0.055
+      end
+      return padding_factor * screenshot.size[1]
     end
 
     def scale_padding(padding)
@@ -187,6 +194,8 @@ module Frameit
       end
 
       vertical_padding = vertical_frame_padding
+      UI.message "Vertical Padding: #{vertical_padding}" if $verbose
+
       top_space = vertical_padding
       left_space = (background.width / 2.0 - sum_width / 2.0).round
 
