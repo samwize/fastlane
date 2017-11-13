@@ -1,5 +1,11 @@
 ** This is a fork of [fastlane/frameit](https://github.com/fastlane/fastlane/frameit).**
 
+It was needed previously as frameit didn't support well for certain dimensions.
+
+Now, as of 2017 Nov, it seems much better.
+
+So this project is not needed for now.
+
 ## Changes in samwize's fork
 
 - Added iPhone 4 device frame (vertical only) in `devices_frames` since Apple does not provide it
